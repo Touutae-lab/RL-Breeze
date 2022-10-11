@@ -1,17 +1,20 @@
 import argparse
 import os
 
+import gym
+import torch
 from pytorch_lightning import Trainer
 from torch.utils.tensorboard import SummaryWriter
 
 from algo.ReinForce import ReinForce
+from macOS.A2C import A2C
 
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--gym", type=str, default="LunarLander-v2")
     parser.add_argument("--lr", type=str, default=1e-3)
-    parser.add_argument("--step", type=int, default=1000)
+    parser.add_argument("--step", type=int, default=500)
     parser.add_argument("--track", type=bool, default=False)
     parser.add_argument("--wandb", type=str, default="RL")
     parser.add_argument("--wandb-entity", type=str, default=None)
@@ -44,6 +47,5 @@ if __name__ == "__main__":
         "|param|value|\n|-|-|\n%s"
         % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
     )
-    algo = ReinForce(args.gym)
-    trainer = Trainer(max_epochs=args.step)
-    trainer.fit(algo)
+    env = gym.make(args.gym)
+    train = A2C(env, writer)

@@ -14,13 +14,14 @@ class ReinForce(LightningModule):
         self,
         env_name,
         num_envs=8,
-        samples_per_epoch=1000,
+        samples_per_epoch=500,
         batch_size=1024,
         hidden_size=64,
         policy_lr=0.001,
         gamma=0.99,
         entropy_coef=0.001,
         optim=AdamW,
+        device='cpu'
     ):
 
         super().__init__()
@@ -30,7 +31,7 @@ class ReinForce(LightningModule):
         obs_size = self.env.single_observation_space.shape[0]
         n_actions = self.env.single_action_space.n
 
-        self.policy = PolicyGradient(obs_size, n_actions, hidden_size)
+        self.policy = PolicyGradient(obs_size, n_actions, hidden_size, device=device)
         self.dataset = RLDataset(self.env, self.policy, samples_per_epoch, gamma)
 
         self.save_hyperparameters()

@@ -1,6 +1,7 @@
 import gym
 import torch
-from numpy import record
+from gym.wrappers import (NormalizeObservation, NormalizeReward,
+                          RecordEpisodeStatistics, RecordVideo)
 
 
 @torch.no_grad()
@@ -25,12 +26,8 @@ def test_agent(env, episode_length, policy, episodes=10):
 
 
 def create_env(env_name, num_envs):
-    env = gym.make(env_name)
-    env = gym.vector.make(env, num_envs=num_envs)
-    env = gym.wrappers.RecordEpisodeStatistics(env)
-    env = gym.wrappers.RecordVideo(
-        env, "videos", episode_trigger=lambda x: x % 100 == 0
-    )
-    env = gym.wrappers.NormalizeObservation(env)
-    env = gym.wrappers.NormalizeReward(env)
+    env = gym.vector.make(env_name, num_envs=num_envs)
+    env = RecordEpisodeStatistics(env)
+    env = NormalizeObservation(env)
+    env = NormalizeReward(env)
     return env
